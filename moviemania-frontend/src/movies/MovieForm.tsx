@@ -12,6 +12,7 @@ import MultipleSelector, { multipleSelectorModel } from "../forms/MultipleSelect
 import { useState } from "react";
 import { genreDTO } from "../genres/genres.model";
 import { movieTheaterDTO } from "../movietheaters/movieTheater.model";
+import TypeAheadActors from "../forms/TypeAheadActors";
 
 // Define custom Yup method
 Yup.addMethod(Yup.string, 'firstLetterUppercase', function() {
@@ -66,6 +67,8 @@ export default function MovieForm(props: movieFormProps) {
                         setSelectedMovieTheaters(selected);
                         setNonSelectedMovieTheaters(nonSelected);
                     }} />
+
+                    <TypeAheadActors displayName="Actors" actors={[]}/>
 
                     <Button disabled={formikProps.isSubmitting} type="submit">Save Changes</Button>
                     <Link className="btn btn-secondary" to="/genres">Cancel</Link>
