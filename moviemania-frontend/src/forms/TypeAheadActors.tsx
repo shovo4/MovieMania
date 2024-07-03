@@ -1,5 +1,6 @@
 import { Typeahead } from "react-bootstrap-typeahead";
 import { actorMovieDTO } from "../actors/actors.model";
+import { ReactElement } from "react";
 
 export default function TypeAheadActors(props: TypeAheadActorsProps) {
 
@@ -24,19 +25,28 @@ export default function TypeAheadActors(props: TypeAheadActorsProps) {
         }
     ];
 
+    const selected: actorMovieDTO[] = [];
+
     return (
         <div className="mb-3">
             <label>{props.displayName}</label>
             <Typeahead
                 id="typeahead"
-                onChange={actor => {
-                    console.log(actor);
+                onChange={(selected) => {
+                    if (selected.length > 0) {
+                        const selectedActor = selected[0] as actorMovieDTO;
+                        if (props.actors.findIndex(a => a.id === selectedActor.id) === -1) {
+                            props.onAdd([...props.actors, selectedActor]);
+                        }
+                    }
                 }}
                 options={actors}
                 labelKey="name"
                 filterBy={["name"]}
                 placeholder="Choose actors..."
                 minLength={1}
+                flip={true}
+                selected={selected}
                 renderMenuItemChildren={(option, props) => {
                     const actor = option as actorMovieDTO;
                     return (
@@ -45,7 +55,7 @@ export default function TypeAheadActors(props: TypeAheadActorsProps) {
                                 src={actor.picture}
                                 alt={actor.name}
                                 style={{
-                                    height: '24px',
+                                    height: '64px',
                                     marginRight: '10px',
                                     borderRadius: '50%'
                                 }}
@@ -55,6 +65,14 @@ export default function TypeAheadActors(props: TypeAheadActorsProps) {
                     );
                 }}
             />
+            <ul className="list-group">
+                {props.actors.map(actor => (
+                    <li key={actor.id} className="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        {props.listUI(actor)}
+                        <span className="badge badge-primary badge-pill pointer text-dark" style={{cursor: 'pointer'}} onClick={() => props.onRemove(actor)}>×</span>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }
@@ -62,4 +80,7 @@ export default function TypeAheadActors(props: TypeAheadActorsProps) {
 interface TypeAheadActorsProps {
     displayName: string;
     actors: actorMovieDTO[];
+    onAdd(actors: actorMovieDTO[]): void;
+    onRemove(actor: actorMovieDTO): void;
+    listUI(actor: actorMovieDTO): ReactElement;
 }

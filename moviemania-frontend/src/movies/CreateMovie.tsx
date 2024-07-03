@@ -14,7 +14,8 @@ export default function CreateMovie() {
       <MovieForm model={{ title: "", inTheaters: false, trailer: "", releaseDate: new Date() }} onSubmit={values => console.log(values)}
       nonSelectedGenres={nonSelectedGenres} selectedGenres={[]}
       nonSelectedMovieTheaters={nonSelectedMovieTheaters}
-      selectedMovieTheaters={[]} />
+      selectedMovieTheaters={[]} 
+      selectedActors={[]}/>
     </>
   );
 }
