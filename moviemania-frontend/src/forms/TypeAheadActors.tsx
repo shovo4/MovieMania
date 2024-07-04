@@ -1,6 +1,6 @@
 import { Typeahead } from "react-bootstrap-typeahead";
 import { actorMovieDTO } from "../actors/actors.model";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 
 export default function TypeAheadActors(props: TypeAheadActorsProps) {
 
@@ -26,6 +26,26 @@ export default function TypeAheadActors(props: TypeAheadActorsProps) {
     ];
 
     const selected: actorMovieDTO[] = [];
+
+    const [draggedElement, setDraggedElement] = useState<actorMovieDTO | undefined>(undefined);
+
+    function handleDragStart(actor: actorMovieDTO) {
+        setDraggedElement(actor);
+    }
+
+    function handleDragOver(actor: actorMovieDTO) {
+        if (!draggedElement) {
+            return;
+        }
+        if (actor.id !== draggedElement.id) {
+            const draggedElementIndex = props.actors.findIndex(a => a.id === draggedElement.id);
+            const actorIndex = props.actors.findIndex(a => a.id === actor.id);
+            const actors = [...props.actors];
+            actors[draggedElementIndex] = actor;
+            actors[actorIndex] = draggedElement;
+            props.onAdd(actors);
+        }
+    }
 
     return (
         <div className="mb-3">
@@ -67,7 +87,9 @@ export default function TypeAheadActors(props: TypeAheadActorsProps) {
             />
             <ul className="list-group">
                 {props.actors.map(actor => (
-                    <li key={actor.id} className="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <li key={actor.id} draggable={true} onDragStart={() => handleDragStart(actor)}
+                    onDragOver={() => handleDragOver(actor)}
+                    className="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                         {props.listUI(actor)}
                         <span className="badge badge-primary badge-pill pointer text-dark" style={{cursor: 'pointer'}} onClick={() => props.onRemove(actor)}>×</span>
                     </li>
